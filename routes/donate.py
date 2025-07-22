@@ -12,23 +12,24 @@ donations_collection = db["donations"]
 # Ruta para registrar nuevos usuarios
 @donations.route("/donate", methods=["POST"])
 def register():
-    data = request.json  # Obtiene los datos enviados en formato JSON
-    # Valida que todos los campos requeridos estén presentes y no vacíos
+    data = request.json
     valid, error = validate_payment(data)
     if not valid:
-        return jsonify({"msg": error}), 400  # Si hay error, responde con mensaje y código 400
+        return jsonify({"msg": error}), 400
 
-
-    # Inserta el nuevo pago en la base de datos
-    donations_collection.insert_one({
+    # Insertar y capturar el resultado para obtener el _id
+    result = donations_collection.insert_one({
         "email": data["email"],
         "paymentMethod": data["paymentMethod"],
         "amount": data["amount"],
         "donationDate": data["donationDate"]
     })
 
-    # Respuesta exitosa
-    return jsonify({"msg": "Donación registrada exitosamente"}), 201
+    # Responder incluyendo el ID generado
+    return jsonify({
+        "msg": "Donación registrada exitosamente",
+        "donation_id": str(result.inserted_id)  # Convertir ObjectId a string para JSON
+    }), 201
 
 from pymongo import DESCENDING
 
@@ -54,6 +55,23 @@ def get_donations_by_email():
                 pass
 
     return jsonify(donations), 200
+
+from bson import ObjectId
+
+@donations.route("/delete_donation", methods=["DELETE"])
+def delete_donation():
+    donation_id = request.args.get("id")
+    if not donation_id:
+        return jsonify({"msg": "Falta el parámetro 'id'"}), 400
+
+    try:
+        result = donations_collection.delete_one({"_id": ObjectId(donation_id)})
+        if result.deleted_count == 1:
+            return jsonify({"msg": f"Donación {donation_id} eliminada"}), 200
+        else:
+            return jsonify({"msg": "Donación no encontrada"}), 404
+    except Exception as e:
+        return jsonify({"msg": f"Error al eliminar la donación: {str(e)}"}), 500
 
 @donations.route('/error')
 def error():
