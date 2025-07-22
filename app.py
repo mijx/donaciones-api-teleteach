@@ -57,6 +57,20 @@ CORS(app)
 #  Registra el blueprint que maneja las rutas de donaciones
 app.register_blueprint(donations)
 
+
+
+from flask_swagger_ui import get_swaggerui_blueprint
+SWAGGER_URL = '/docs'  # URL de acceso en el navegador
+API_URL = '/static/openapi.json'  # Ruta al archivo JSON
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={"app_name": "Donaciones API"}
+)
+
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
 # Ejecuta la aplicación si se corre directamente con `python app.py`
 if __name__ == "__main__":
     app.run(debug=True, port=8888)  # El modo debug permite ver errores en tiempo real (no usar en producción)
