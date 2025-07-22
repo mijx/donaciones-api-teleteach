@@ -3,3 +3,4 @@ flask-cors         # Permite llamadas al backend desde el frontend (CORS)
 pymongo            # Cliente oficial de MongoDB para Python
 python-dotenv      # Carga variables de entorno desde archivos .env
 werkzeug           # Utilidades de seguridad como hash de contraseñas
+flask-swagger-ui
