@@ -38,6 +38,8 @@ pip install -r requirements.txt
 # Ejecuta la aplicación
 python app.py
 ```
+
+Documentación en swagger disponible en: http://localhost:8888/docs/
 ## 📋 Endpoints principales
 | Método | Ruta              | Descripción                           |
 |--------|-------------------|----------------------------------------|
