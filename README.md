@@ -39,7 +39,8 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Documentación en swagger disponible en: http://localhost:8888/docs/
+La documentación en Swagger se encuentra en: http://localhost:8888/docs/
+
 ## 📋 Endpoints principales
 | Método | Ruta              | Descripción                           |
 |--------|-------------------|----------------------------------------|

@@ -1,1 +1,126 @@
-{"openapi":"3.1.0","info":{"title":"Donaciones API","description":"API para registrar y gestionar donaciones con métricas Prometheus.","version":"1.0.0"},"paths":{"/metrics":{"get":{"summary":"Metrics","operationId":"metrics_metrics_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/donate":{"post":{"summary":"Register Donation","operationId":"register_donation_donate_post","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/donations":{"get":{"summary":"Get Donations By Email","operationId":"get_donations_by_email_donations_get","parameters":[{"name":"email","in":"query","required":true,"schema":{"type":"string","description":"Correo del donante","title":"Email"},"description":"Correo del donante"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/delete_donation":{"delete":{"summary":"Delete Donation","operationId":"delete_donation_delete_donation_delete","parameters":[{"name":"id","in":"query","required":true,"schema":{"type":"string","description":"ID de la donación a eliminar","title":"Id"},"description":"ID de la donación a eliminar"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/error":{"get":{"summary":"Error","operationId":"error_error_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}}},"components":{"schemas":{"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"}}}}
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Donations API",
+    "version": "1.0.0",
+    "description": "API para registrar y consultar donaciones."
+  },
+  "paths": {
+    "/donate": {
+      "post": {
+        "summary": "Registrar una donación",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "paymentMethod", "amount", "donationDate"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "paymentMethod": { "type": "string" },
+                  "amount": { "type": "number" },
+                  "donationDate": { "type": "string", "format": "date-time" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Donación registrada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": { "type": "string" },
+                    "donation_id": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o datos faltantes"
+          }
+        }
+      }
+    },
+    "/donations": {
+      "get": {
+        "summary": "Obtener donaciones por correo electrónico",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "email" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de donaciones encontradas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": { "type": "string" },
+                      "email": { "type": "string" },
+                      "paymentMethod": { "type": "string" },
+                      "amount": { "type": "number" },
+                      "donationDate": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parámetro 'email' faltante"
+          }
+        }
+      }
+    },
+    "/delete_donation": {
+      "delete": {
+        "summary": "Eliminar una donación por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donación eliminada exitosamente"
+          },
+          "400": {
+            "description": "Parámetro 'id' faltante"
+          },
+          "404": {
+            "description": "Donación no encontrada"
+          },
+          "500": {
+            "description": "Error al eliminar la donación"
+          }
+        }
+      }
+    },
+    "/error": {
+      "get": {
+        "summary": "Ruta de prueba para error",
+        "responses": {
+          "500": {
+            "description": "Error interno simulado"
+          }
+        }
+      }
+    }
+  }
+}
